@@ -26,3 +26,6 @@ _testmain.go
 /bin
 /dist
 /vendor
+
+/.vagrant
+/ubuntu-xenial-16.04-cloudimg-console.log
