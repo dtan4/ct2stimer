@@ -1,0 +1,10 @@
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /bin/bash -l -c 'docker run --rm=true --name scheduler.task01.`date +\%Y\%m\%d\%H\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task01 RAILS_ENV=production'
+
+15 * * * * /bin/bash -l -c 'docker run --rm=true --name scheduler.task02.`date +\%Y\%m\%d\%H\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task02 RAILS_ENV=production'
+
+# 10 * * * * /bin/bash -l -c 'docker run --rm=true --name scheduler.task03.`date +\%Y\%m\%d\%H\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task03 RAILS_ENV=production'
+
+
+
+# This is a comment line
+30 * * * * /bin/bash -l -c 'docker run --rm=true --name scheduler.task04.`date +\%Y\%m\%d\%H\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task04 RAILS_ENV=production'
