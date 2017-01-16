@@ -1,2 +1,6 @@
 package: github.com/dtan4/ct2stimer
-import: []
+import:
+- package: github.com/coreos/go-systemd
+  version: v14
+  subpackages:
+  - dbus
