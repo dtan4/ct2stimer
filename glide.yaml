@@ -4,3 +4,4 @@ import:
   version: v14
   subpackages:
   - dbus
+- package: github.com/robfig/cron

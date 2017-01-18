@@ -38,3 +38,43 @@ func TestParse(t *testing.T) {
 		t.Errorf("Schedules do not match.\n  expected: %q\n  got:      %q", expected, got)
 	}
 }
+
+func TestConvertToSystemdCalendar(t *testing.T) {
+	testcases := []struct {
+		schedule *Schedule
+		expected string
+	}{
+		{
+			schedule: &Schedule{
+				Spec:    "0,5,10,15,20,25,30,35,40,45,50,55 * * * *",
+				Command: "",
+			},
+			expected: "*:0,5,10,15,20,25,30,35,40,45,50,55",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "0,5,10,15,20,25,30,35,40,45,50,55 10-12 * * *",
+				Command: "",
+			},
+			expected: "10,11,12:0,5,10,15,20,25,30,35,40,45,50,55", // TODO: 10-12:0,5,...
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "0-5 * 1 * *",
+				Command: "",
+			},
+			expected: "*-1 *:0,1,2,3,4,5", // TODO: *:0-5
+		},
+	}
+
+	for _, tc := range testcases {
+		got, err := tc.schedule.ConvertToSystemdCalendar()
+		if err != nil {
+			t.Errorf("Error should not be raised. error: %s", err)
+		}
+
+		if got != tc.expected {
+			t.Errorf("Calendar does not match. expected: %q, actual: %q", tc.expected, got)
+		}
+	}
+}
