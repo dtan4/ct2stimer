@@ -38,6 +38,7 @@ cross-build: deps
 
 .PHONY: deps
 deps: glide
+	go get -u github.com/jteeuwen/go-bindata/...
 	glide install
 
 .PHONY: dist
@@ -48,6 +49,10 @@ dist:
 	$(DIST_DIRS) tar -zcf $(NAME)-$(VERSION)-{}.tar.gz {} \; && \
 	$(DIST_DIRS) zip -r $(NAME)-$(VERSION)-{}.zip {} \; && \
 	cd ..
+
+.PHONY: generate
+generate:
+	go generate ./...
 
 .PHONY: glide
 glide:

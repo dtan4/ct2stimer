@@ -1,0 +1,9 @@
+[Unit]
+Dscription={{ .Name }} timer service
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStart={{ .Command }}
+Type=oneshot
