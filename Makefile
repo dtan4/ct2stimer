@@ -52,7 +52,7 @@ dist:
 
 .PHONY: generate
 generate:
-	go generate ./...
+	go generate -x ./...
 
 .PHONY: glide
 glide:
