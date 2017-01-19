@@ -1,6 +1,7 @@
 package crontab
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"strconv"
 	"strings"
@@ -104,6 +105,11 @@ func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 	fields = append(fields, fmt.Sprintf("%s:%s", hours, minutes))
 
 	return strings.Join(fields, " "), nil
+}
+
+// SHA256Sum generates SHA-256 checksum of schedule
+func (s *Schedule) SHA256Sum() string {
+	return fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%s;%s", s.Spec, s.Command))))
 }
 
 func convertDowsToWeekdays(bits string) (string, error) {

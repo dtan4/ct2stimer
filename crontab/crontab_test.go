@@ -113,3 +113,15 @@ func TestConvertToSystemdCalendar(t *testing.T) {
 		}
 	}
 }
+
+func TestSHA256Sum(t *testing.T) {
+	schedule := &Schedule{
+		Spec:    "15 * * * *",
+		Command: "echo 'hello'",
+	}
+	expected := "4ab7fd35a3996a8b58483a640a52976d5c974372c12e5f7a973be86d96a0096e"
+
+	if got := schedule.SHA256Sum(); got != expected {
+		t.Errorf("Checksum does not match. expected: %q, got: %q", expected, got)
+	}
+}
