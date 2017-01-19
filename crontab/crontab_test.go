@@ -46,7 +46,7 @@ func TestConvertToSystemdCalendar(t *testing.T) {
 	}{
 		{
 			schedule: &Schedule{
-				Spec:    "0,5,10,15,20,25,30,35,40,45,50,55 * * * *",
+				Spec:    "*/5 * * * *",
 				Command: "",
 			},
 			expected: "*:0,5,10,15,20,25,30,35,40,45,50,55",
@@ -78,6 +78,27 @@ func TestConvertToSystemdCalendar(t *testing.T) {
 				Command: "",
 			},
 			expected: "Mon,Tue,Wed,Thu,Fri 8,9,10,11,12,13,14,15,16,17:0,20,40",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "0 17 * * *",
+				Command: "",
+			},
+			expected: "17:0",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "* * * * 0",
+				Command: "",
+			},
+			expected: "Sun *:*",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "5 * * * *",
+				Command: "",
+			},
+			expected: "*:5",
 		},
 	}
 
