@@ -66,7 +66,7 @@ install:
 
 .PHONY: test
 test:
-	go test -cover -v `glide novendor`
+	go test -cover -race -v `glide novendor`
 
 .PHONY: update-deps
 update-deps: glide
