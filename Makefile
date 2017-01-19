@@ -2,21 +2,23 @@ NAME     := ct2stimer
 VERSION  := v0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
 
-SRCS    := $(shell find . -type f -name '*.go')
-LDFLAGS := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(REVISION)\" -extldflags \"-static\""
+SRCS      := $(shell find . -type f -name '*.go')
+TEMPLATES := $(shell find . -type f -name '*.tmpl')
+LDFLAGS   := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(REVISION)\" -extldflags \"-static\""
 
 DIST_DIRS := find * -type d -exec
 
 .DEFAULT_GOAL := bin/$(NAME)
 
-bin/$(NAME): $(SRCS)
+bin/$(NAME): $(SRCS) $(TEMPLATES)
+	$(MAKE) generate
 	go build $(LDFLAGS) -o bin/$(NAME)
 
 .PHONY: ci-test
 ci-test:
 	echo "" > coverage.txt
 	for d in `glide novendor`; do \
-		go test -coverprofile=profile.out -covermode=atomic -v $$d; \
+		go test -coverprofile=profile.out -covermode=atomic -v $$d || break;  \
 		if [ -f profile.out ]; then \
 			cat profile.out >> coverage.txt; \
 			rm profile.out; \
@@ -29,7 +31,7 @@ clean:
 	rm -rf vendor/*
 
 .PHONY: cross-build
-cross-build: deps
+cross-build: generate
 	for os in darwin linux windows; do \
 		for arch in amd64 386; do \
 			GOOS=$$os GOARCH=$$arch go build -a -tags netgo -installsuffix netgo $(LDFLAGS) -o dist/$$os-$$arch/$(NAME); \
@@ -51,7 +53,7 @@ dist:
 	cd ..
 
 .PHONY: generate
-generate:
+generate: $(TEMPLATES)
 	go generate -x ./...
 
 .PHONY: glide

@@ -31,3 +31,5 @@ _testmain.go
 /ubuntu-xenial-16.04-cloudimg-console.log
 
 bindata.go
+
+/coverage.txt
