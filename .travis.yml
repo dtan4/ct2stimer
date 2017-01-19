@@ -8,6 +8,8 @@ before_install:
   - mkdir -p $GOPATH/bin
 install:
   - make deps
+before_script:
+  - make generate
 script:
   - make ci-test
 after_success:
