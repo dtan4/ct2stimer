@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dtan4/ct2stimer.svg?branch=master)](https://travis-ci.org/dtan4/ct2stimer)
 
-Convert Crontab to Systemd Timer
+Convert crontab to systemd timer
 
 ## Developemnt
 

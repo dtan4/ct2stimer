@@ -7,19 +7,19 @@ import (
 	"text/template"
 )
 
-// ServiceData represents data set of Systemd Service
+// ServiceData represents data set of systemd Service
 type ServiceData struct {
 	Name    string
 	Command string
 }
 
-// TimerData represents data set of Systemd Timer
+// TimerData represents data set of systemd Timer
 type TimerData struct {
 	Name     string
 	Cronspec string
 }
 
-// GenerateService generates new Systemd Service
+// GenerateService generates new systemd Service
 func GenerateService(name, command string) (string, error) {
 	body, err := Asset("templates/service.tmpl")
 	if err != nil {
@@ -43,7 +43,7 @@ func GenerateService(name, command string) (string, error) {
 	return buf.String(), nil
 }
 
-// GenerateTimer generates new Systemd Timer
+// GenerateTimer generates new systemd Timer
 func GenerateTimer(name, cronspec string) (string, error) {
 	body, err := Asset("templates/timer.tmpl")
 	if err != nil {
