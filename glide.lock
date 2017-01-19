@@ -1,12 +1,6 @@
-hash: 1ad095c91e5e640df9f1ae6f8cb4a8043e034f2fdd383827860f62fea2ef1663
-updated: 2017-01-18T17:30:26.80729389+09:00
+hash: 1694d2dbf714f23be2f1fcf45245476c49ea4bfe6d763556d26ee3ee28a5696d
+updated: 2017-01-19T11:30:21.822456318+09:00
 imports:
-- name: github.com/coreos/go-systemd
-  version: 48702e0da86bd25e76cfef347e2adeb434a0d0a6
-  subpackages:
-  - dbus
-- name: github.com/godbus/dbus
-  version: 4b24ebee04561bf8a3bcc09aead82062edc56778
 - name: github.com/robfig/cron
   version: 9585fd555638e77bba25f25db5c44b41f264aeb7
 testImports: []
