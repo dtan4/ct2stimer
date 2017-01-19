@@ -21,6 +21,18 @@ const (
 	maxDow    = 6
 )
 
+var (
+	weekDays = []string{
+		"Sun",
+		"Mon",
+		"Tue",
+		"Wed",
+		"Thu",
+		"Fri",
+		"Sat",
+	}
+)
+
 // Schedule represents crontab spec and command
 type Schedule struct {
 	Spec    string
@@ -78,7 +90,11 @@ func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 	fields := []string{}
 
 	if dowBits != "*" {
-		fields = append(fields, dowBits)
+		dows, err := convertBitsToDows(dowBits)
+		if err != nil {
+			return "", err
+		}
+		fields = append(fields, strings.Join(dows, ","))
 	}
 
 	if monthBits != "*" || domBits != "*" {
@@ -88,6 +104,20 @@ func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 	fields = append(fields, fmt.Sprintf("%s:%s", hourBits, minuteBits))
 
 	return strings.Join(fields, " "), nil
+}
+
+func convertBitsToDows(bits string) ([]string, error) {
+	dows := []string{}
+
+	for _, bit := range strings.Split(bits, ",") {
+		b, err := strconv.Atoi(bit)
+		if err != nil {
+			return []string{}, err
+		}
+		dows = append(dows, weekDays[b])
+	}
+
+	return dows, nil
 }
 
 func parseBits(n uint64, min, max int) string {
