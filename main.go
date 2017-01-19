@@ -8,14 +8,31 @@ import (
 
 	"github.com/dtan4/ct2stimer/crontab"
 	"github.com/dtan4/ct2stimer/systemd"
+	flag "github.com/spf13/pflag"
 )
 
 func main() {
-	if len(os.Args) != 2 {
+	var (
+		filename string
+		outdir   string
+	)
+
+	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
+
+	f.StringVarP(&filename, "file", "f", "", "crontab file")
+	f.StringVarP(&outdir, "outdir", "o", "", "Directory to save systemd files")
+
+	f.Parse(os.Args[1:])
+
+	if filename == "" {
 		fmt.Fprintln(os.Stderr, "Please specify crontab file.")
 		os.Exit(1)
 	}
-	filename := os.Args[1]
+
+	if outdir == "" {
+		fmt.Fprintln(os.Stderr, "Please specify directory to save systemd files.")
+		os.Exit(1)
+	}
 
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {

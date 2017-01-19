@@ -1,6 +1,8 @@
-hash: 1694d2dbf714f23be2f1fcf45245476c49ea4bfe6d763556d26ee3ee28a5696d
-updated: 2017-01-19T11:30:21.822456318+09:00
+hash: 6708b3acd3cbed6a67198bf01772d86f35f80347f5c3b93e9a2ff4d6a8774d90
+updated: 2017-01-19T11:58:10.765720864+09:00
 imports:
 - name: github.com/robfig/cron
   version: 9585fd555638e77bba25f25db5c44b41f264aeb7
+- name: github.com/spf13/pflag
+  version: 5ccb023bc27df288a957c5e994cd44fd19619465
 testImports: []
