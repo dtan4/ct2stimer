@@ -81,43 +81,43 @@ func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 		return "", fmt.Errorf("Unable to convert Schedule to SpecSchedule")
 	}
 
-	minuteBits := parseBits(specSchedule.Minute, minMinute, maxMinute)
-	hourBits := parseBits(specSchedule.Hour, minHour, maxHour)
-	domBits := parseBits(specSchedule.Dom, minDom, maxDom)
-	monthBits := parseBits(specSchedule.Month, minMonth, maxMonth)
-	dowBits := parseBits(specSchedule.Dow, minDow, maxDow)
+	minutes := parseBits(specSchedule.Minute, minMinute, maxMinute)
+	hours := parseBits(specSchedule.Hour, minHour, maxHour)
+	doms := parseBits(specSchedule.Dom, minDom, maxDom)
+	months := parseBits(specSchedule.Month, minMonth, maxMonth)
+	dows := parseBits(specSchedule.Dow, minDow, maxDow)
 
 	fields := []string{}
 
-	if dowBits != "*" {
-		dows, err := convertBitsToDows(dowBits)
+	if dows != "*" {
+		weekdays, err := convertDowsToWeekdays(dows)
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, strings.Join(dows, ","))
+		fields = append(fields, weekdays)
 	}
 
-	if monthBits != "*" || domBits != "*" {
-		fields = append(fields, fmt.Sprintf("%s-%s", monthBits, domBits))
+	if months != "*" || doms != "*" {
+		fields = append(fields, fmt.Sprintf("%s-%s", months, doms))
 	}
 
-	fields = append(fields, fmt.Sprintf("%s:%s", hourBits, minuteBits))
+	fields = append(fields, fmt.Sprintf("%s:%s", hours, minutes))
 
 	return strings.Join(fields, " "), nil
 }
 
-func convertBitsToDows(bits string) ([]string, error) {
+func convertDowsToWeekdays(bits string) (string, error) {
 	dows := []string{}
 
 	for _, bit := range strings.Split(bits, ",") {
 		b, err := strconv.Atoi(bit)
 		if err != nil {
-			return []string{}, err
+			return "", err
 		}
 		dows = append(dows, weekDays[b])
 	}
 
-	return dows, nil
+	return strings.Join(dows, ","), nil
 }
 
 func parseBits(n uint64, min, max int) string {
