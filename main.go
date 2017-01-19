@@ -11,30 +11,37 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-func main() {
-	var (
-		filename string
-		outdir   string
-	)
+var opts = struct {
+	filename string
+	outdir   string
+}{}
 
+func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
-	f.StringVarP(&filename, "file", "f", "", "crontab file")
-	f.StringVarP(&outdir, "outdir", "o", "", "Directory to save systemd files")
+	f.StringVarP(&opts.filename, "file", "f", "", "crontab file")
+	f.StringVarP(&opts.outdir, "outdir", "o", "", "directory to save systemd files")
 
-	f.Parse(os.Args[1:])
+	f.Parse(args)
 
-	if filename == "" {
-		fmt.Fprintln(os.Stderr, "Please specify crontab file.")
+	if opts.filename == "" {
+		return fmt.Errorf("Please specify crontab file.")
+	}
+
+	if opts.outdir == "" {
+		return fmt.Errorf("Please specify directory to save systemd files.")
+	}
+
+	return nil
+}
+
+func main() {
+	if err := parseArgs(os.Args[1:]); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	if outdir == "" {
-		fmt.Fprintln(os.Stderr, "Please specify directory to save systemd files.")
-		os.Exit(1)
-	}
-
-	body, err := ioutil.ReadFile(filename)
+	body, err := ioutil.ReadFile(opts.filename)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -61,7 +68,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		servicePath := filepath.Join(outdir, name+".service")
+		servicePath := filepath.Join(opts.outdir, name+".service")
 		if ioutil.WriteFile(servicePath, []byte(service), 0644); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -73,7 +80,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		timerPath := filepath.Join(outdir, name+".timer")
+		timerPath := filepath.Join(opts.outdir, name+".timer")
 		if ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
