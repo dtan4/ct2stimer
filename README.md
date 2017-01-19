@@ -4,7 +4,7 @@
 
 Convert crontab to systemd timer
 
-## Developemnt
+## Development
 
 Building and executing on Ubuntu 16.04 VM is easy so that macOS does not have Systemd.
 
