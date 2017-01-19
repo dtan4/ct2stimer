@@ -2,14 +2,16 @@ NAME     := ct2stimer
 VERSION  := v0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
 
-SRCS    := $(shell find . -type f -name '*.go')
-LDFLAGS := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(REVISION)\" -extldflags \"-static\""
+SRCS      := $(shell find . -type f -name '*.go')
+TEMPLATES := $(shell find . -type f -name '*.tmpl')
+LDFLAGS   := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(REVISION)\" -extldflags \"-static\""
 
 DIST_DIRS := find * -type d -exec
 
 .DEFAULT_GOAL := bin/$(NAME)
 
-bin/$(NAME): $(SRCS)
+bin/$(NAME): $(SRCS) $(TEMPLATES)
+	$(MAKE) generate
 	go build $(LDFLAGS) -o bin/$(NAME)
 
 .PHONY: ci-test
@@ -51,7 +53,7 @@ dist:
 	cd ..
 
 .PHONY: generate
-generate:
+generate: $(TEMPLATES)
 	go generate -x ./...
 
 .PHONY: glide
