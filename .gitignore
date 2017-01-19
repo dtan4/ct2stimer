@@ -33,3 +33,5 @@ _testmain.go
 bindata.go
 
 /coverage.txt
+
+/tmp

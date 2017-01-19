@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
+	"path/filepath"
 
 	"github.com/dtan4/ct2stimer/crontab"
 	"github.com/dtan4/ct2stimer/systemd"
@@ -46,17 +46,23 @@ func main() {
 		os.Exit(1)
 	}
 
-	for i, schedule := range schedules {
+	for _, schedule := range schedules {
 		calendar, err := schedule.ConvertToSystemdCalendar()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
-		name := "systemd" + strconv.Itoa(i)
+		name := "cron-" + schedule.SHA256Sum()[0:12]
 
 		service, err := systemd.GenerateService(name, schedule.Command)
 		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
+		servicePath := filepath.Join(outdir, name+".service")
+		if ioutil.WriteFile(servicePath, []byte(service), 0644); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -67,12 +73,10 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Println("----- Service")
-		fmt.Println(service)
-		fmt.Println("")
-
-		fmt.Println("----- Timer")
-		fmt.Println(timer)
-		fmt.Println("")
+		timerPath := filepath.Join(outdir, name+".timer")
+		if ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 }
