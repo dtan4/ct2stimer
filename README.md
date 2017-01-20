@@ -23,7 +23,7 @@ Pass --all to see loaded but inactive timers, too.
 
 ## Development
 
-Building and executing on Ubuntu 16.04 VM is easy so that macOS does not have Systemd.
+Building and executing on Ubuntu 16.04 VM is easy so that macOS does not have systemd.
 
 ```bash
 $ go get -d github.com/dtan4/ct2stimer
@@ -31,7 +31,7 @@ $ cd $GOPATH/src/github.com/dtan4/ct2stimer
 $ vagrant up
 $ vagrant ssh
 
-ubuntu@ubuntu-xenial:~$ cd $GOPATH/src/github.com/dtan4/ct2timer
+ubuntu@ubuntu-xenial:~/src/github.com/dtan4/ct2timer$ make deps
 ubuntu@ubuntu-xenial:~/src/github.com/dtan4/ct2timer$ make
 ubuntu@ubuntu-xenial:~/src/github.com/dtan4/ct2timer$ bin/ct2stimer
 ```
