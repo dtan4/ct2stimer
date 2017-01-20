@@ -39,6 +39,29 @@ func parseArgs(args []string) error {
 	return nil
 }
 
+func reloadSystemd(timers []string) error {
+	conn, err := systemd.NewConn()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+
+	client := systemd.NewClient(conn)
+
+	if err := client.Reload(); err != nil {
+		return err
+	}
+
+	for _, timerUnit := range timers {
+		if err := client.StartUnit(timerUnit); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func main() {
 	if err := parseArgs(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -56,6 +79,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	timers := []string{}
 
 	for _, schedule := range schedules {
 		calendar, err := schedule.ConvertToSystemdCalendar()
@@ -89,19 +114,12 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	}
 
-	conn, err := systemd.NewConn()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		timers = append(timers, name+".timer")
 	}
-	defer conn.Close()
-
-	client := systemd.NewClient(conn)
 
 	if opts.reload {
-		if err := client.Reload(); err != nil {
+		if err := reloadSystemd(timers); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

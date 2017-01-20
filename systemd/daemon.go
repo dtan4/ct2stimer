@@ -1,6 +1,8 @@
 package systemd
 
 import (
+	"fmt"
+
 	"github.com/coreos/go-systemd/dbus"
 )
 
@@ -19,6 +21,21 @@ func NewClient(conn *dbus.Conn) *Client {
 // NewConn establishes a new connection to D-Bus
 func NewConn() (*dbus.Conn, error) {
 	return dbus.New()
+}
+
+// StartUnit starts the given systemd unit file
+func (c *Client) StartUnit(name string) error {
+	ch := make(chan string)
+
+	if _, err := c.conn.StartUnit(name, "replace", ch); err != nil {
+		return err
+	}
+
+	if job := <-ch; job != "done" {
+		return fmt.Errorf("Couldn't start %s. status: %s", name, job)
+	}
+
+	return nil
 }
 
 // Reload reloads systemd unit files
