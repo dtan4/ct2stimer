@@ -36,6 +36,14 @@ func parseArgs(args []string) error {
 		return fmt.Errorf("Please specify directory to save systemd files.")
 	}
 
+	if _, err := os.Stat(opts.outdir); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("%s: directory does not exist", opts.outdir)
+		}
+
+		return err
+	}
+
 	return nil
 }
 
