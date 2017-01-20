@@ -15,14 +15,16 @@ var opts = struct {
 	after    string
 	filename string
 	outdir   string
+	reload   bool
 }{}
 
 func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
-	f.StringVar(&opts.filename, "after", "", "Unit dependencies (After=)")
+	f.StringVar(&opts.filename, "after", "", "unit dependencies (After=)")
 	f.StringVarP(&opts.filename, "file", "f", "", "crontab file")
 	f.StringVarP(&opts.outdir, "outdir", "o", "", "directory to save systemd files")
+	f.BoolVar(&opts.reload, "reload", false, "reload & start genreated timers")
 
 	f.Parse(args)
 
@@ -84,6 +86,22 @@ func main() {
 
 		timerPath := filepath.Join(opts.outdir, name+".timer")
 		if ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	conn, err := systemd.NewConn()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+
+	client := systemd.NewClient(conn)
+
+	if opts.reload {
+		if err := client.Reload(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

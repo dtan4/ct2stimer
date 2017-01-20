@@ -2,3 +2,7 @@ package: github.com/dtan4/ct2stimer
 import:
 - package: github.com/robfig/cron
 - package: github.com/spf13/pflag
+- package: github.com/coreos/go-systemd
+  version: v14
+  subpackages:
+  - dbus
