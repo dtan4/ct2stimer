@@ -1,7 +1,6 @@
 [Unit]
-Description={{ .Name }} service unit
-After=docker.service
-Requires=docker.service
+Description={{ .Name }} service unit{{ if .After }}
+After={{ .After }}{{ end }}
 
 [Service]
 TimeoutStartSec=0

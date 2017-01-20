@@ -12,6 +12,7 @@ import (
 )
 
 var opts = struct {
+	after    string
 	filename string
 	outdir   string
 }{}
@@ -19,6 +20,7 @@ var opts = struct {
 func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
+	f.StringVar(&opts.filename, "after", "", "Unit dependencies (After=)")
 	f.StringVarP(&opts.filename, "file", "f", "", "crontab file")
 	f.StringVarP(&opts.outdir, "outdir", "o", "", "directory to save systemd files")
 
@@ -62,7 +64,7 @@ func main() {
 
 		name := "cron-" + schedule.SHA256Sum()[0:12]
 
-		service, err := systemd.GenerateService(name, schedule.Command)
+		service, err := systemd.GenerateService(name, schedule.Command, opts.after)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

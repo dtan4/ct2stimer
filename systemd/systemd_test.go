@@ -5,26 +5,50 @@ import (
 )
 
 func TestGenerateService(t *testing.T) {
-	name := "ct2stimer"
-	command := "/bin/bash docker run --rm ubuntu:16.04 echo hello"
-	expected := `[Unit]
+	testcases := []struct {
+		name     string
+		command  string
+		after    string
+		expected string
+	}{
+		{
+			name:    "ct2stimer",
+			command: "/bin/bash docker run --rm ubuntu:16.04 echo hello",
+			after:   "docker.service",
+			expected: `[Unit]
 Description=ct2stimer service unit
 After=docker.service
-Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
 ExecStart=/bin/bash docker run --rm ubuntu:16.04 echo hello
 Type=oneshot
-`
+`,
+		},
+		{
+			name:    "ct2stimer",
+			command: "/bin/bash docker run --rm ubuntu:16.04 echo hello",
+			after:   "",
+			expected: `[Unit]
+Description=ct2stimer service unit
 
-	got, err := GenerateService(name, command)
-	if err != nil {
-		t.Errorf("Error should not be raised. error: %s", err)
+[Service]
+TimeoutStartSec=0
+ExecStart=/bin/bash docker run --rm ubuntu:16.04 echo hello
+Type=oneshot
+`,
+		},
 	}
 
-	if got != expected {
-		t.Errorf("Service does not match.\n\nexpected:\n%s\n\ngot:\n%s", expected, got)
+	for _, tc := range testcases {
+		got, err := GenerateService(tc.name, tc.command, tc.after)
+		if err != nil {
+			t.Errorf("Error should not be raised. error: %s", err)
+		}
+
+		if got != tc.expected {
+			t.Errorf("Service does not match.\n\nexpected:\n%s\n\ngot:\n%s", tc.expected, got)
+		}
 	}
 }
 

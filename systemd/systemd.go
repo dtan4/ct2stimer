@@ -11,6 +11,7 @@ import (
 type ServiceData struct {
 	Name    string
 	Command string
+	After   string
 }
 
 // TimerData represents data set of systemd Timer
@@ -20,7 +21,7 @@ type TimerData struct {
 }
 
 // GenerateService generates new systemd Service
-func GenerateService(name, command string) (string, error) {
+func GenerateService(name, command, after string) (string, error) {
 	body, err := Asset("templates/service.tmpl")
 	if err != nil {
 		return "", err
@@ -36,6 +37,7 @@ func GenerateService(name, command string) (string, error) {
 	if err := tmpl.Execute(&buf, &ServiceData{
 		Name:    name,
 		Command: command,
+		After:   after,
 	}); err != nil {
 		return "", err
 	}
