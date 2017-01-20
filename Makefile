@@ -67,7 +67,7 @@ install:
 	go install $(LDFLAGS)
 
 .PHONY: test
-test:
+test: generate
 	go test -cover -race -v `glide novendor`
 
 .PHONY: update-deps

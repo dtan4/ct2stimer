@@ -8,7 +8,7 @@ func TestGenerateService(t *testing.T) {
 	name := "ct2stimer"
 	command := "/bin/bash docker run --rm ubuntu:16.04 echo hello"
 	expected := `[Unit]
-Dscription=ct2stimer timer service
+Description=ct2stimer service unit
 After=docker.service
 Requires=docker.service
 
@@ -32,7 +32,7 @@ func TestGenerateTimer(t *testing.T) {
 	name := "ct2stimer"
 	cronspec := "30 * * * *"
 	expected := `[Unit]
-Description=ct2stimer timer
+Description=ct2stimer timer unit
 
 [Timer]
 OnCalendar=30 * * * *
