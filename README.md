@@ -1,6 +1,7 @@
 # ct2stimer
 
 [![Build Status](https://travis-ci.org/dtan4/ct2stimer.svg?branch=master)](https://travis-ci.org/dtan4/ct2stimer)
+[![codecov](https://codecov.io/gh/dtan4/ct2stimer/branch/master/graph/badge.svg)](https://codecov.io/gh/dtan4/ct2stimer)
 
 Convert crontab to systemd timer
 
