@@ -98,7 +98,7 @@ func main() {
 		}
 
 		servicePath := filepath.Join(opts.outdir, name+".service")
-		if ioutil.WriteFile(servicePath, []byte(service), 0644); err != nil {
+		if err := ioutil.WriteFile(servicePath, []byte(service), 0644); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -110,7 +110,7 @@ func main() {
 		}
 
 		timerPath := filepath.Join(opts.outdir, name+".timer")
-		if ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
+		if err := ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
