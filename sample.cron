@@ -1,8 +1,8 @@
 # This is comment line
-*/5 * * * * echo "Hello"
+*/5 * * * * /bin/echo "Hello"
 0,5,10,15,20,25,30,35,40,45,50,55 10-12 * * * /bin/echo -n "Hello 2"
 
-0-5 * 1 * * echo "Hello 3"
+0-5 * 1 * * /bin/echo "Hello 3"
 23 2,1 * 12 1,6 /bin/bash -l -c 'echo "Hello 4"'
 
 
