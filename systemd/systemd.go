@@ -7,6 +7,11 @@ import (
 	"text/template"
 )
 
+const (
+	// DefaultUnitsDirectory represents the directory of user-defined systemd units
+	DefaultUnitsDirectory = "/etc/systemd/system"
+)
+
 // ServiceData represents data set of systemd Service
 type ServiceData struct {
 	Name    string

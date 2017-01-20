@@ -23,7 +23,7 @@ func parseArgs(args []string) error {
 
 	f.StringVar(&opts.filename, "after", "", "unit dependencies (After=)")
 	f.StringVarP(&opts.filename, "file", "f", "", "crontab file")
-	f.StringVarP(&opts.outdir, "outdir", "o", "", "directory to save systemd files")
+	f.StringVarP(&opts.outdir, "outdir", "o", systemd.DefaultUnitsDirectory, "directory to save systemd files")
 	f.BoolVar(&opts.reload, "reload", false, "reload & start genreated timers")
 
 	f.Parse(args)
