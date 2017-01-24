@@ -13,19 +13,19 @@ import (
 )
 
 var opts = struct {
-	after    string
-	filename string
-	outdir   string
-	reload   bool
+	after      string
+	filename   string
+	nameRegexp string
+	outdir     string
+	reload     bool
 }{}
-
-var defaultRegexp = regexp.MustCompile(`--name ([a-zA-Z0-9._-]+)`)
 
 func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
 	f.StringVar(&opts.filename, "after", "", "unit dependencies (After=)")
 	f.StringVarP(&opts.filename, "file", "f", "", "crontab file")
+	f.StringVar(&opts.nameRegexp, "name-regexp", "", "regexp to extract scheduler name from crontab")
 	f.StringVarP(&opts.outdir, "outdir", "o", systemd.DefaultUnitsDirectory, "directory to save systemd files")
 	f.BoolVar(&opts.reload, "reload", false, "reload & start genreated timers")
 
@@ -100,7 +100,18 @@ func main() {
 			os.Exit(1)
 		}
 
-		name := schedule.NameByRegexp(defaultRegexp)
+		var name string
+
+		if opts.nameRegexp != "" {
+			re, err := regexp.Compile(opts.nameRegexp)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+
+			name = schedule.NameByRegexp(re)
+		}
+
 		if name == "" {
 			name = "cron-" + schedule.SHA256Sum()[0:12]
 		}
