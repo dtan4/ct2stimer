@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"testing"
 )
 
@@ -110,6 +111,69 @@ func TestConvertToSystemdCalendar(t *testing.T) {
 
 		if got != tc.expected {
 			t.Errorf("Calendar does not match. expected: %q, actual: %q", tc.expected, got)
+		}
+	}
+}
+
+func TestNameByRegexp(t *testing.T) {
+	testcases := []struct {
+		schedule   *Schedule
+		nameRegexp *regexp.Regexp
+		expected   string
+	}{
+		{
+			schedule: &Schedule{
+				Spec:    "0,5,10,15,20,25,30,35,40,45,50,55 * * * *",
+				Command: "/bin/bash -l -c 'docker run --rm=true --name scheduler.task01.`date +\\%Y\\%m\\%d\\%H\\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task01 RAILS_ENV=production'",
+			},
+			nameRegexp: regexp.MustCompile(`--name ([a-zA-Z0-9.]+)`),
+			expected:   "scheduler.task01",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "15 * * * *",
+				Command: "/bin/echo hello",
+			},
+			nameRegexp: regexp.MustCompile(`--name ([a-zA-Z0-9.]+)`),
+			expected:   "",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "30 * * * *",
+				Command: "/bin/docker run --name hello ubuntu:16.04 echo hello",
+			},
+			nameRegexp: regexp.MustCompile(`--name ([a-zA-Z0-9.]+)`),
+			expected:   "hello",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "30 * * * *",
+				Command: "/bin/bash -l -c 'docker run --rm=true --name scheduler.task01_--.._.`date +\\%Y\\%m\\%d\\%H\\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task01 RAILS_ENV=production'",
+			},
+			nameRegexp: regexp.MustCompile(`--name ([a-zA-Z0-9.]+)`),
+			expected:   "scheduler.task01",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "30 * * * *",
+				Command: "/bin/bash -l -c 'docker run --rm=true --name scheduler.task01.`date +\\%Y\\%m\\%d\\%H\\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task01 RAILS_ENV=production'",
+			},
+			nameRegexp: regexp.MustCompile(``),
+			expected:   "",
+		},
+		{
+			schedule: &Schedule{
+				Spec:    "30 * * * *",
+				Command: "/bin/bash -l -c 'docker run --rm=true --name scheduler.task01.`date +\\%Y\\%m\\%d\\%H\\%M` --memory=5g 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest bundle exec rake task01 RAILS_ENV=production'",
+			},
+			nameRegexp: nil,
+			expected:   "",
+		},
+	}
+
+	for _, tc := range testcases {
+		if got := tc.schedule.NameByRegexp(tc.nameRegexp); got != tc.expected {
+			t.Errorf("Name does not match. expected: %q, got: %q", tc.expected, got)
 		}
 	}
 }

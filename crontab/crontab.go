@@ -3,6 +3,7 @@ package crontab
 import (
 	"crypto/sha256"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -23,7 +24,8 @@ const (
 )
 
 var (
-	weekDays = []string{
+	suffixRegexp = regexp.MustCompile(`[^a-zA-Z0-9]+$`)
+	weekDays     = []string{
 		"Sun",
 		"Mon",
 		"Tue",
@@ -105,6 +107,24 @@ func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 	fields = append(fields, fmt.Sprintf("%s:%s", hours, minutes))
 
 	return strings.Join(fields, " "), nil
+}
+
+// NameByRegexp returns schedule name extracted by the given regexp
+func (s *Schedule) NameByRegexp(nameRegexp *regexp.Regexp) string {
+	if nameRegexp == nil {
+		return ""
+	}
+
+	var name string
+
+	match := nameRegexp.FindStringSubmatch(s.Command)
+	if len(match) >= 2 {
+		name = match[1]
+	} else {
+		name = ""
+	}
+
+	return suffixRegexp.ReplaceAllString(name, "")
 }
 
 // SHA256Sum generates SHA-256 checksum of schedule

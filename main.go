@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/dtan4/ct2stimer/crontab"
 	"github.com/dtan4/ct2stimer/systemd"
@@ -17,6 +18,8 @@ var opts = struct {
 	outdir   string
 	reload   bool
 }{}
+
+var defaultRegexp = regexp.MustCompile(`--name ([a-zA-Z0-9._-]+)`)
 
 func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
@@ -97,7 +100,10 @@ func main() {
 			os.Exit(1)
 		}
 
-		name := "cron-" + schedule.SHA256Sum()[0:12]
+		name := schedule.NameByRegexp(defaultRegexp)
+		if name == "" {
+			name = "cron-" + schedule.SHA256Sum()[0:12]
+		}
 
 		service, err := systemd.GenerateService(name, schedule.Command, opts.after)
 		if err != nil {
