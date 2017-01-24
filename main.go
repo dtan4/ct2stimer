@@ -50,6 +50,15 @@ func parseArgs(args []string) error {
 	return nil
 }
 
+func getScheduleName(schedule *crontab.Schedule, re *regexp.Regexp) string {
+	name := schedule.NameByRegexp(re)
+	if name == "" {
+		name = "cron-" + schedule.SHA256Sum()[0:12]
+	}
+
+	return name
+}
+
 func reloadSystemd(timers []string) error {
 	conn, err := systemd.NewConn()
 	if err != nil {
@@ -91,29 +100,42 @@ func main() {
 		os.Exit(1)
 	}
 
-	timers := []string{}
+	var re *regexp.Regexp
 
-	for _, schedule := range schedules {
-		calendar, err := schedule.ConvertToSystemdCalendar()
+	if opts.nameRegexp == "" {
+		re = nil
+	} else {
+		var err error
+
+		re, err = regexp.Compile(opts.nameRegexp)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+	}
 
-		var name string
+	scMap := map[string]*crontab.Schedule{}
 
-		if opts.nameRegexp != "" {
-			re, err := regexp.Compile(opts.nameRegexp)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
+	for _, schedule := range schedules {
+		name := getScheduleName(schedule, re)
 
-			name = schedule.NameByRegexp(re)
+		if sc, ok := scMap[name]; ok {
+			fmt.Fprintln(os.Stderr, fmt.Errorf(`Schedule name %q already exists. Please consider another name regexp.
+  Command A: %s
+  Command B: %s`, name, sc.Command, schedule.Command))
+			os.Exit(1)
 		}
 
-		if name == "" {
-			name = "cron-" + schedule.SHA256Sum()[0:12]
+		scMap[name] = schedule
+	}
+
+	timers := []string{}
+
+	for name, schedule := range scMap {
+		calendar, err := schedule.ConvertToSystemdCalendar()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 
 		service, err := systemd.GenerateService(name, schedule.Command, opts.after)
