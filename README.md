@@ -22,6 +22,49 @@ Sat 2017-12-02 01:23:00 UTC  10 months 11 days left n/a  n/a    cron-d3c507cb243
 Pass --all to see loaded but inactive timers, too.
 ```
 
+## Installation
+
+TBD
+
+## Usage
+
+ct2stimer reads crontab file at `/etc/crontab` by default. You can specify crontab file with `-f FILE` flag.
+
+systemd unit file are saved at `/etc/systemd/system` by default. You can specify save directory with `-o OUTDIR` flag.
+
+```bash
+$ ct2stimer
+$ ct2stimer -f sample.cron -o unitfiles
+```
+
+### Reload systemd and start all timers automatically
+
+If `--reload` is provided, ct2stimer reloads systemd unit files (= `systemctl daemon-reload`) and starts all generated timers (= `systemctl start foo.timer`). Maybe `sudo` is required to execute.
+
+```bash
+$ sudo ct2stimer -f sample.cron --reload
+```
+
+### Determine unit name from command to execute
+
+As you know, crontab does not have the concept of "task name". However, task name is required to identify each systemd unit.
+You can extract task name from original command using regular expression. `--name-regexp REGEXP` flag is used for this.
+Regular expression must have one [capturing group](http://www.regular-expressions.info/brackets.html).
+
+If regular expression is not provided or command does not match to the given regular expression, hash value, which is calculated from command, is used for unit name.
+
+```bash
+$ crontab -f sample.cron --name-regexp '--name ([a-zA-Z0-9_-]+)'
+```
+
+## Specify unit dependencies
+
+You can specify unit dependencies (`After=`) with `--after AFTER` flag.
+
+```bash
+$ crontab -f sample.crom --after docker.service
+```
+
 ## Development
 
 Building and executing on Ubuntu 16.04 VM is easy so that macOS does not have systemd.
