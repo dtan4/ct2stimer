@@ -14,6 +14,7 @@ import (
 
 var opts = struct {
 	after      string
+	dryRun     bool
 	filename   string
 	nameRegexp string
 	outdir     string
@@ -24,6 +25,7 @@ func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
 	f.StringVar(&opts.after, "after", "", "unit dependencies (After=)")
+	f.BoolVar(&opts.dryRun, "dry-run", false, "dry run")
 	f.StringVarP(&opts.filename, "file", "f", crontab.DefaultCrontabFilename, "crontab file")
 	f.StringVar(&opts.nameRegexp, "name-regexp", "", "regexp to extract scheduler name from crontab")
 	f.StringVarP(&opts.outdir, "outdir", "o", systemd.DefaultUnitsDirectory, "directory to save systemd files")
@@ -145,9 +147,14 @@ func main() {
 		}
 
 		servicePath := filepath.Join(opts.outdir, name+".service")
-		if err := ioutil.WriteFile(servicePath, []byte(service), 0644); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+
+		if opts.dryRun {
+			fmt.Printf("[dry-run] %q will be created\n", servicePath)
+		} else {
+			if err := ioutil.WriteFile(servicePath, []byte(service), 0644); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 		}
 
 		timer, err := systemd.GenerateTimer(name, calendar)
@@ -157,15 +164,20 @@ func main() {
 		}
 
 		timerPath := filepath.Join(opts.outdir, name+".timer")
-		if err := ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+
+		if opts.dryRun {
+			fmt.Printf("[dry-run] %q will be created\n", timerPath)
+		} else {
+			if err := ioutil.WriteFile(timerPath, []byte(timer), 0644); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 		}
 
 		timers = append(timers, name+".timer")
 	}
 
-	if opts.reload {
+	if opts.reload && !opts.dryRun {
 		if err := reloadSystemd(timers); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
