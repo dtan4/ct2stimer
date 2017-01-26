@@ -57,7 +57,7 @@ If regular expression is not provided or command does not match to the given reg
 $ crontab -f sample.cron --name-regexp '--name ([a-zA-Z0-9_-]+)'
 ```
 
-## Specify unit dependencies
+### Specify unit dependencies
 
 You can specify unit dependencies (`After=`) with `--after AFTER` flag.
 
