@@ -24,7 +24,7 @@ func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
 	f.StringVar(&opts.after, "after", "", "unit dependencies (After=)")
-	f.StringVarP(&opts.filename, "file", "f", "", "crontab file")
+	f.StringVarP(&opts.filename, "file", "f", crontab.DefaultCrontabFilename, "crontab file")
 	f.StringVar(&opts.nameRegexp, "name-regexp", "", "regexp to extract scheduler name from crontab")
 	f.StringVarP(&opts.outdir, "outdir", "o", systemd.DefaultUnitsDirectory, "directory to save systemd files")
 	f.BoolVar(&opts.reload, "reload", false, "reload & start genreated timers")

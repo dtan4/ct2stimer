@@ -11,6 +11,9 @@ import (
 )
 
 const (
+	// DefaultCrontabFilename represents the default path of crontab file
+	DefaultCrontabFilename = "/etc/crontab"
+
 	minMinute = 0
 	maxMinute = 59
 	minHour   = 0
