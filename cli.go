@@ -20,6 +20,7 @@ const (
 
 var opts = struct {
 	after      string
+	delete     bool
 	dryRun     bool
 	filename   string
 	nameRegexp string
@@ -64,6 +65,7 @@ func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
 	f.StringVar(&opts.after, "after", "", "unit dependencies (After=)")
+	f.BoolVar(&opts.delete, "delete", false, "delete unused unit files")
 	f.BoolVar(&opts.dryRun, "dry-run", false, "dry run")
 	f.StringVarP(&opts.filename, "file", "f", crontab.DefaultCrontabFilename, "crontab file")
 	f.StringVar(&opts.nameRegexp, "name-regexp", "", "regexp to extract scheduler name from crontab")
@@ -192,6 +194,19 @@ func run(args []string) int {
 		}
 
 		timers = append(timers, name+".timer")
+	}
+
+	if opts.delete {
+		deleted, err := deleteUnusedUnits(opts.outdir, scMap)
+
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return exitCodeError
+		}
+
+		for _, path := range deleted {
+			fmt.Printf("Deleted: %s\n", path)
+		}
 	}
 
 	if opts.reload && !opts.dryRun {
