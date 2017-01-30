@@ -54,7 +54,19 @@ Regular expression must have one [capturing group](http://www.regular-expression
 If regular expression is not provided or command does not match to the given regular expression, hash value, which is calculated from command, is used for unit name.
 
 ```bash
-$ crontab -f sample.cron --name-regexp '--name ([a-zA-Z0-9_-]+)'
+$ ct2stimer -f sample.cron --name-regexp '--name ([a-zA-Z0-9_-]+)'
+```
+
+### Delete unregistered unit files
+
+If `--delete` is provided, ct2timer deletes unit files which are no longer written in the given crontab file.
+
+```bash
+$ ct2stimer -f tmp/scheduler -o /run/systemd/system --delete
+Deleted: /run/systemd/system/cron-19fb9c164fe8.service
+Deleted: /run/systemd/system/cron-19fb9c164fe8.timer
+Deleted: /run/systemd/system/cron-4f76a3902132.service
+Deleted: /run/systemd/system/cron-4f76a3902132.timer
 ```
 
 ### Specify unit dependencies
@@ -62,7 +74,7 @@ $ crontab -f sample.cron --name-regexp '--name ([a-zA-Z0-9_-]+)'
 You can specify unit dependencies (`After=`) with `--after AFTER` flag.
 
 ```bash
-$ crontab -f sample.crom --after docker.service
+$ ct2stimer -f sample.crom --after docker.service
 ```
 
 ## Development
