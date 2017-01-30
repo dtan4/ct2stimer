@@ -6,3 +6,5 @@ import:
   version: v14
   subpackages:
   - dbus
+- package: github.com/pkg/errors
+  version: ~0.8.0

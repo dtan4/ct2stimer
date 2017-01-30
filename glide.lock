@@ -1,5 +1,5 @@
-hash: 759b2bd075feae22f90d1c6ef2f3fc0bba515f3fd364f88f8b85d8f7baf4aef3
-updated: 2017-01-20T16:05:55.837464189+09:00
+hash: 6022a5b9ffc89b189803ce3edb3d2369ec721d2fafd78f1fc2e37ba5fe67b769
+updated: 2017-01-30T16:36:05.816020706+09:00
 imports:
 - name: github.com/coreos/go-systemd
   version: 48702e0da86bd25e76cfef347e2adeb434a0d0a6
@@ -7,8 +7,10 @@ imports:
   - dbus
 - name: github.com/godbus/dbus
   version: 4b24ebee04561bf8a3bcc09aead82062edc56778
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/robfig/cron
   version: 9585fd555638e77bba25f25db5c44b41f264aeb7
 - name: github.com/spf13/pflag
-  version: 5ccb023bc27df288a957c5e994cd44fd19619465
+  version: 25f8b5b07aece3207895bf19f7ab517eb3b22a40
 testImports: []
