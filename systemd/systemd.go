@@ -4,5 +4,5 @@ package systemd
 
 const (
 	// DefaultUnitsDirectory represents the directory of user-defined systemd units
-	DefaultUnitsDirectory = "/etc/systemd/system"
+	DefaultUnitsDirectory = "/run/systemd/system"
 )

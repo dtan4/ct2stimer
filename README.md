@@ -30,7 +30,7 @@ TBD
 
 ct2stimer reads crontab file at `/etc/crontab` by default. You can specify crontab file with `-f FILE` flag.
 
-systemd unit file are saved at `/etc/systemd/system` by default. You can specify save directory with `-o OUTDIR` flag.
+systemd unit file are saved at `/run/systemd/system` by default. You can specify save directory with `-o OUTDIR` flag.
 
 ```bash
 $ ct2stimer
