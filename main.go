@@ -19,6 +19,7 @@ var opts = struct {
 	nameRegexp string
 	outdir     string
 	reload     bool
+	version    bool
 }{}
 
 func parseArgs(args []string) error {
@@ -30,8 +31,13 @@ func parseArgs(args []string) error {
 	f.StringVar(&opts.nameRegexp, "name-regexp", "", "regexp to extract scheduler name from crontab")
 	f.StringVarP(&opts.outdir, "outdir", "o", systemd.DefaultUnitsDirectory, "directory to save systemd files")
 	f.BoolVar(&opts.reload, "reload", false, "reload & start genreated timers")
+	f.BoolVarP(&opts.version, "version", "v", false, "print version")
 
 	f.Parse(args)
+
+	if opts.version {
+		return nil
+	}
 
 	if opts.filename == "" {
 		return fmt.Errorf("Please specify crontab file.")
@@ -88,6 +94,11 @@ func main() {
 	if err := parseArgs(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	if opts.version {
+		printVersion()
+		os.Exit(0)
 	}
 
 	body, err := ioutil.ReadFile(opts.filename)
