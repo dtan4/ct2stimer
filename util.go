@@ -4,9 +4,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/dtan4/ct2stimer/crontab"
+	"github.com/dtan4/ct2stimer/systemd"
 	"github.com/pkg/errors"
 )
 
@@ -62,4 +64,35 @@ func deleteUnusedUnits(outdir string, scMap map[string]*crontab.Schedule) ([]str
 	}
 
 	return deleted, nil
+}
+
+func getScheduleName(schedule *crontab.Schedule, re *regexp.Regexp) string {
+	name := schedule.NameByRegexp(re)
+	if name == "" {
+		name = "cron-" + schedule.SHA256Sum()[0:12]
+	}
+
+	return name
+}
+
+func reloadSystemd(timers []string) error {
+	conn, err := systemd.NewConn()
+	if err != nil {
+		return errors.Wrap(err, "cannot establish new systemd connection")
+	}
+	defer conn.Close()
+
+	client := systemd.NewClient(conn)
+
+	if err := client.Reload(); err != nil {
+		return errors.Wrap(err, "cannot reload systemd unit files")
+	}
+
+	for _, timerUnit := range timers {
+		if err := client.StartUnit(timerUnit); err != nil {
+			return errors.Wrap(err, "cannot reload systemd timer unit")
+		}
+	}
+
+	return nil
 }

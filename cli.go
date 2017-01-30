@@ -29,38 +29,6 @@ var opts = struct {
 	version    bool
 }{}
 
-func getScheduleName(schedule *crontab.Schedule, re *regexp.Regexp) string {
-	name := schedule.NameByRegexp(re)
-	if name == "" {
-		name = "cron-" + schedule.SHA256Sum()[0:12]
-	}
-
-	return name
-}
-
-func reloadSystemd(timers []string) error {
-	conn, err := systemd.NewConn()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	defer conn.Close()
-
-	client := systemd.NewClient(conn)
-
-	if err := client.Reload(); err != nil {
-		return err
-	}
-
-	for _, timerUnit := range timers {
-		if err := client.StartUnit(timerUnit); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func parseArgs(args []string) error {
 	f := flag.NewFlagSet("ct2stimer", flag.ExitOnError)
 
