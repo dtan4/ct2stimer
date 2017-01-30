@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/robfig/cron"
 )
 
@@ -61,7 +62,7 @@ func Parse(crontab string) ([]*Schedule, error) {
 
 		ss := strings.SplitN(line, " ", 6)
 		if len(ss) < 6 {
-			return []*Schedule{}, fmt.Errorf("Invalid format. line: %s", line)
+			return []*Schedule{}, errors.Errorf("line %q is invalid format", line)
 		}
 
 		schedules = append(schedules, &Schedule{
@@ -79,12 +80,12 @@ func Parse(crontab string) ([]*Schedule, error) {
 func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 	schedule, err := cron.ParseStandard(s.Spec)
 	if err != nil {
-		return "", err
+		return "", errors.Wrapf(err, "failed to parse schedule spec %q", s.Spec)
 	}
 
 	specSchedule, ok := schedule.(*cron.SpecSchedule)
 	if !ok {
-		return "", fmt.Errorf("Unable to convert Schedule to SpecSchedule")
+		return "", errors.New("unable to convert Schedule to SpecSchedule")
 	}
 
 	minutes := parseBits(specSchedule.Minute, minMinute, maxMinute)
@@ -98,7 +99,7 @@ func (s *Schedule) ConvertToSystemdCalendar() (string, error) {
 	if dows != "*" {
 		weekdays, err := convertDowsToWeekdays(dows)
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "failed to convert day of weeks")
 		}
 		fields = append(fields, weekdays)
 	}
@@ -141,7 +142,7 @@ func convertDowsToWeekdays(bits string) (string, error) {
 	for _, bit := range strings.Split(bits, ",") {
 		b, err := strconv.Atoi(bit)
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "failed to parse bit string")
 		}
 		dows = append(dows, weekDays[b])
 	}
