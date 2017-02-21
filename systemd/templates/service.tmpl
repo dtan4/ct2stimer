@@ -5,4 +5,5 @@ After={{ .After }}{{ end }}
 [Service]
 TimeoutStartSec=0
 ExecStart={{ .Command }}
-Type=oneshot
+Type=oneshot{{ if .User }}
+User={{ .User }}{{ end }}

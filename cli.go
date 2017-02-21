@@ -26,6 +26,7 @@ var opts = struct {
 	nameRegexp string
 	outdir     string
 	reload     bool
+	user       string
 	version    bool
 }{}
 
@@ -39,6 +40,7 @@ func parseArgs(args []string) error {
 	f.StringVar(&opts.nameRegexp, "name-regexp", "", "regexp to extract scheduler name from crontab")
 	f.StringVarP(&opts.outdir, "outdir", "o", systemd.DefaultUnitsDirectory, "directory to save systemd files")
 	f.BoolVar(&opts.reload, "reload", false, "reload & start genreated timers")
+	f.StringVar(&opts.user, "user", "", "unix username who executes process")
 	f.BoolVarP(&opts.version, "version", "v", false, "print version")
 
 	f.Parse(args)
@@ -127,7 +129,7 @@ func run(args []string) int {
 			return exitCodeError
 		}
 
-		service, err := systemd.GenerateService(name, schedule.Command, opts.after)
+		service, err := systemd.GenerateService(name, schedule.Command, opts.after, opts.user)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return exitCodeError
