@@ -12,6 +12,7 @@ type ServiceData struct {
 	Name    string
 	Command string
 	After   string
+	User    string
 }
 
 // TimerData represents data set of systemd Timer
@@ -21,7 +22,7 @@ type TimerData struct {
 }
 
 // GenerateService generates new systemd Service
-func GenerateService(name, command, after string) (string, error) {
+func GenerateService(name, command, after, user string) (string, error) {
 	body, err := Asset("templates/service.tmpl")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to load service template")
@@ -38,6 +39,7 @@ func GenerateService(name, command, after string) (string, error) {
 		Name:    name,
 		Command: command,
 		After:   after,
+		User:    user,
 	}); err != nil {
 		return "", errors.Wrap(err, "failed to dispatch values in service template")
 	}

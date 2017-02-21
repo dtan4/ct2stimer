@@ -9,12 +9,14 @@ func TestGenerateService(t *testing.T) {
 		name     string
 		command  string
 		after    string
+		user     string
 		expected string
 	}{
 		{
 			name:    "ct2stimer",
 			command: "/bin/bash docker run --rm ubuntu:16.04 echo hello",
 			after:   "docker.service",
+			user:    "",
 			expected: `[Unit]
 Description=ct2stimer service unit
 After=docker.service
@@ -29,6 +31,7 @@ Type=oneshot
 			name:    "ct2stimer",
 			command: "/bin/bash docker run --rm ubuntu:16.04 echo hello",
 			after:   "",
+			user:    "core",
 			expected: `[Unit]
 Description=ct2stimer service unit
 
@@ -36,12 +39,13 @@ Description=ct2stimer service unit
 TimeoutStartSec=0
 ExecStart=/bin/bash docker run --rm ubuntu:16.04 echo hello
 Type=oneshot
+User=core
 `,
 		},
 	}
 
 	for _, tc := range testcases {
-		got, err := GenerateService(tc.name, tc.command, tc.after)
+		got, err := GenerateService(tc.name, tc.command, tc.after, tc.user)
 		if err != nil {
 			t.Errorf("Error should not be raised. error: %s", err)
 		}
