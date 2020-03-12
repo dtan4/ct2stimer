@@ -123,7 +123,8 @@ func (s *Schedule) NameByRegexp(nameRegexp *regexp.Regexp) string {
 
 	match := nameRegexp.FindStringSubmatch(s.Command)
 	if len(match) >= 2 {
-		name = match[1]
+		re := regexp.MustCompile(`[^A-Za-z0-9_]+`)
+		name = re.ReplaceAllString(match[1], "-")
 	} else {
 		name = ""
 	}
