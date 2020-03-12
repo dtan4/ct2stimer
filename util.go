@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dtan4/ct2stimer/crontab"
-	"github.com/dtan4/ct2stimer/systemd"
+	"./crontab"
+	"./systemd"
 	"github.com/pkg/errors"
 )
 

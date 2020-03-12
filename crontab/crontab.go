@@ -60,7 +60,7 @@ func Parse(crontab string) ([]*Schedule, error) {
 			continue
 		}
 
-		ss := strings.SplitN(line, " ", 6)
+		ss := regexp.MustCompile(`\s+`).Split(line, 6)
 		if len(ss) < 6 {
 			return []*Schedule{}, errors.Errorf("line %q is invalid format", line)
 		}
@@ -123,7 +123,8 @@ func (s *Schedule) NameByRegexp(nameRegexp *regexp.Regexp) string {
 
 	match := nameRegexp.FindStringSubmatch(s.Command)
 	if len(match) >= 2 {
-		name = match[1]
+		re := regexp.MustCompile(`[^A-Za-z0-9_]+`)
+		name = re.ReplaceAllString(match[1], "-")
 	} else {
 		name = ""
 	}
