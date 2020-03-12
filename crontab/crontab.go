@@ -60,7 +60,7 @@ func Parse(crontab string) ([]*Schedule, error) {
 			continue
 		}
 
-		ss := strings.SplitN(line, " ", 6)
+		ss := regexp.MustCompile(`\s+`).Split(line, 6)
 		if len(ss) < 6 {
 			return []*Schedule{}, errors.Errorf("line %q is invalid format", line)
 		}
